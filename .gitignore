@@ -1,0 +1,4 @@
+.env
+api.key
+__pycache__/
+models/

@@ -1,0 +1,6 @@
+.git/
+.env
+api.key
+test/
+models/
+__pycache__/

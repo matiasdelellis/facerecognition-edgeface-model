@@ -1,0 +1,23 @@
+services:
+  facerecognition-edgeface:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile
+    image: facerecognition-edgeface-model:local
+    container_name: facerecognition-edgeface
+    restart: unless-stopped
+    ports:
+      - "${PORT:-8080}:5000"
+    env_file:
+      - path: ../.env
+        required: false
+    environment:
+      DETECTOR: ${DETECTOR:-scrfd_500m}
+      GUNICORN_WORKERS: ${GUNICORN_WORKERS:-1}
+      MODEL_THREADS: ${MODEL_THREADS:-1}
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:5000/health').read()"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 30s
