@@ -37,9 +37,15 @@ The tests, the conclusions and the decisions behind this model and its defaults 
 
 ```sh
 cp .env.example .env    # set a real API_KEY
-make compose-up         # builds the image (downloads and exports the weights) and runs it on :8080
+make compose-up         # builds the image (downloads and exports the weights), runs it on :8080
+                        # and follows the logs (Ctrl+C stops following, the service keeps running)
 API_BASE=http://localhost:8080 API_KEY=... make smoke
 ```
+
+`make compose-start` does the same without following the logs, `make compose-logs` follows them
+and `make compose-down` stops it. It restarts with Docker until it is stopped
+(`restart: unless-stopped`). `DETECTOR` and `PORT` can be given on the same line:
+`DETECTOR=scrfd_10g make compose-start`.
 
 Then configure the app as with any external model:
 
