@@ -11,6 +11,8 @@ services:
     env_file:
       - path: ../.env
         required: false
+    # LICENSE_ACCEPTED=non-commercial comes from ../.env (see NOTICE.md);
+    # the service exits at startup without it.
     environment:
       DETECTOR: ${DETECTOR:-scrfd_500m}
       GUNICORN_WORKERS: ${GUNICORN_WORKERS:-1}

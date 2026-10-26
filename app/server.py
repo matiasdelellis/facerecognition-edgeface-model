@@ -6,7 +6,12 @@ import cv2
 import numpy
 from flask import Flask, abort, request
 
-from app.models import DETECTION_THRESHOLD, DETECTORS, MODELS_DIR, EdgeFace, template_kps
+from app.license import accepted as license_accepted
+from app.license import require as require_license
+
+require_license()
+
+from app.models import DETECTION_THRESHOLD, DETECTORS, MODELS_DIR, EdgeFace, template_kps  # noqa: E402
 
 # Info
 PACKAGE_VERSION = "0.1.0"
@@ -179,4 +184,14 @@ def welcome():
         return {"facerecognition-external-model": "Neural network files are missing: " + ", ".join(missing),
                 "version": PACKAGE_VERSION}
     return {"facerecognition-external-model": "welcome", "version": PACKAGE_VERSION,
-            "model": {"detector": DETECTOR_NAME, "recognizer": "edgeface_base"}}
+            "model": {"detector": DETECTOR_NAME, "recognizer": "edgeface_base"},
+            "license": {
+                "commercial_use": False,
+                "accepted": license_accepted(),
+                "notice": "NOTICE.md",
+                "weights": {
+                    "edgeface_base": "CC BY-NC-SA 4.0",
+                    "scrfd": "InsightFace non-commercial research use only",
+                    "yunet": "MIT",
+                },
+            }}

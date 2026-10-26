@@ -1,4 +1,16 @@
 import os
+import sys
+
+# Gunicorn loads this file by path, so make the package importable.
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
+from app.license import require as require_license  # noqa: E402
+
+
+def on_starting(server):
+    """Abort the boot before forking workers if the weights were not accepted."""
+    require_license()
+
 
 bind = f"[::]:{os.getenv('PORT', '5000')}"
 accesslog = "-"

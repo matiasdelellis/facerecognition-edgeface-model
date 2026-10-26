@@ -11,6 +11,12 @@ with the dlib ones. `/open` reports it, so the app needs the version that reads 
 then uses the cosine distance and the thresholds of this model, and refuses to mix these
 descriptors with the faces already analyzed with dlib (run `occ face:reset --model` first).
 
+> **Non-commercial use only.** The weights are downloaded at build time and are licensed
+> for non-commercial use (EdgeFace-Base: CC BY-NC-SA 4.0; SCRFD: InsightFace non-commercial
+> research). The service refuses to start until the operator confirms it with
+> `LICENSE_ACCEPTED=non-commercial`. See [NOTICE.md](NOTICE.md). That variable is an
+> acknowledgement, not a license.
+
 ## Why
 
 Measured on a test suite of 2162 photos with ~5600 faces of 66 people
@@ -36,7 +42,8 @@ The tests, the conclusions and the decisions behind this model and its defaults 
 ## Run
 
 ```sh
-cp .env.example .env    # set a real API_KEY
+cp .env.example .env    # set a real API_KEY, and LICENSE_ACCEPTED=non-commercial
+                        # after reading NOTICE.md
 make compose-up         # builds the image (downloads and exports the weights), runs it on :8080
                         # and follows the logs (Ctrl+C stops following, the service keeps running)
 API_BASE=http://localhost:8080 API_KEY=... make smoke
@@ -57,6 +64,7 @@ occ face:setup --external_model_url http://host:8080 --external_model_api_key ..
 
 | Variable | Default | |
 |---|---|---|
+| `LICENSE_ACCEPTED` | — | Required. `non-commercial` confirms the weights' non-commercial terms; without it the service exits at startup. See [NOTICE.md](NOTICE.md). |
 | `API_KEY` | `some-super-secret-api-key` | Shared secret of the `x-api-key` header. Without it, `api.key` in the working directory is read. |
 | `DETECTOR` | `scrfd_500m` | `scrfd_500m`, `scrfd_10g` (finds more small faces, ~4x slower) or `yunet`. |
 | `GUNICORN_WORKERS` | `1` | Processes, one per core. |
@@ -71,6 +79,13 @@ The detectors work differently with the size of the image:
   become smaller than ~10 px at that scale are lost.
 - **EdgeFace** works on a 112x112 aligned crop of each face: its cost is per face, whatever the
   size of the image.
+
+### Non-commercial acknowledgement
+
+The service exits at startup unless `LICENSE_ACCEPTED=non-commercial` is set. `/welcome`
+reports the license and the acknowledgement under `license`. This records the operator's
+confirmation; it does not verify the actual use and is not a license. For commercial use, get
+a license from Idiap and InsightFace, or replace the weights; see [NOTICE.md](NOTICE.md).
 
 ## What `/open` reports
 
@@ -100,13 +115,18 @@ The detectors work differently with the size of the image:
 ## Licenses of the weights
 
 The weights are downloaded while building the image and are not part of this repository.
+**The service as built is for non-commercial use only**: EdgeFace-Base is CC BY-NC-SA 4.0
+and the SCRFD weights are for non-commercial research use only. YuNet is MIT, but choosing it
+does not make the service commercial, because EdgeFace-Base is still used.
 
-| Model | Weights | License |
-|---|---|---|
-| YuNet | OpenCV Zoo `face_detection_yunet_2023mar` | MIT |
-| SCRFD-500M | InsightFace `buffalo_sc` | Non-commercial research use only |
-| SCRFD-10G | InsightFace `buffalo_l` | Non-commercial research use only |
-| EdgeFace-Base | Idiap `EdgeFace-Base` | CC BY-NC-SA 4.0 (non-commercial) |
+| Model | Weights | License | Commercial use |
+|---|---|---|---|
+| YuNet | OpenCV Zoo `face_detection_yunet_2023mar` | MIT | Yes, on its own |
+| SCRFD-500M | InsightFace `buffalo_sc` | Non-commercial research use only | No |
+| SCRFD-10G | InsightFace `buffalo_l` | Non-commercial research use only | No |
+| EdgeFace-Base | Idiap `EdgeFace-Base` | CC BY-NC-SA 4.0 (non-commercial) | No |
 
-EdgeFace is non-commercial, so an image built with it must not be used commercially or
-redistributed under other terms.
+An image built with EdgeFace or SCRFD must not be used commercially or redistributed under
+other terms. [NOTICE.md](NOTICE.md) has the attribution, the share-alike terms of the ONNX
+export, and how to obtain a commercial license. The weights' licenses do not grant rights to
+the source code of this repository.

@@ -21,6 +21,7 @@ RUN pip install --no-cache-dir flask==3.1.0 gunicorn==23.0.0 numpy==1.26.4 \
 
 COPY --from=models /models/ /app/models/
 COPY app/ /app/app/
+COPY NOTICE.md /app/NOTICE.md
 
 WORKDIR /app/
 
